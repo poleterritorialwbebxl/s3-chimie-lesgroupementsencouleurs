@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les groupements d'atomes en couleurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff8ee;--ink:#2b2340;--card:#fff;--line:#2b2340;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1830;--ink:#fff3e0;--card:#2a2345;--line:#fff3e0}}
+:root[data-theme="dark"]{--bg:#1d1830;--ink:#fff3e0;--card:#2a2345;--line:#fff3e0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Fredoka,"Trebuchet MS",sans-serif;line-height:1.4}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:clamp(1.8rem,6vw,3rem);margin:.2em 0 .1em}
+h2{font-size:1.5rem;margin:34px 0 10px}
+.sub{margin:0 0 12px;opacity:.8}
+.box{border:2.5px solid var(--line);border-radius:18px;background:var(--card);box-shadow:5px 5px 0 var(--line);padding:16px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{border:2.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--c,#ffd23f);color:#2b2340;font-weight:600;box-shadow:3px 3px 0 var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{perspective:700px;border:0;background:none;padding:0;cursor:pointer;height:130px;font:inherit;color:#2b2340}
+.in{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.f,.b{position:absolute;inset:0;backface-visibility:hidden;border:2.5px solid var(--line);border-radius:16px;background:var(--c);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;box-shadow:4px 4px 0 var(--line);text-align:center}
+.b{transform:rotateY(180deg)}
+.s{font-size:2.2rem;font-weight:700;line-height:1}
+.s sub{font-size:.55em}
+.nm{font-size:1.25rem;font-weight:700;line-height:1.15}
+.fm{font-size:.8rem;margin-top:6px}
+.hide{display:none}
+.ladder{display:flex;gap:10px;align-items:flex-end}
+.step{flex:1;border:2.5px solid var(--line);border-radius:14px;background:#ff8fc2;color:#2b2340;text-align:center;padding:8px 4px 10px}
+.step .s{font-size:1.7rem}
+.step .nm{font-size:1rem;margin-top:4px}
+.os{display:flex;gap:4px;justify-content:center;margin-top:6px;min-height:18px}
+.o{width:16px;height:16px;border-radius:50%;background:#7cc4ff;border:2px solid #2b2340}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:14px}
+.pair{border:2.5px solid var(--line);border-radius:14px;padding:10px;background:var(--bg);text-align:center}
+.pair b{font-size:1.1rem}
+.quiz .q{font-size:1.4rem;font-weight:600;margin:8px 0 12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{border:2.5px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
+.opt.ok{background:#7bd88f;color:#12351b}.opt.ko{background:#ff8a8a;color:#4a0f0f}
+.btn{margin-top:12px;border:2.5px solid var(--line);border-radius:999px;background:#ffd23f;color:#2b2340;padding:8px 18px;font:inherit;font-weight:600;cursor:pointer}
+button:focus-visible{outline:3px solid #7b5cff;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.in{transition:none}}
+@media (max-width:640px){.opts{grid-template-columns:1fr}.ladder{gap:6px}.step .nm{font-size:.8rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>Les groupements d'atomes en couleurs</h1>
+<p class="sub">14 groupes à retenir. Touche une carte pour voir le nom, filtre par famille, puis teste-toi.</p>
+
+<h2>1. Les cartes</h2>
+<div class="bar" id="bar"></div>
+<div class="grid" id="grid"></div>
+
+<h2>2. L'astuce des terminaisons</h2>
+<div class="box">
+<p style="margin-top:0"><b>La famille du chlore :</b> chaque étape ajoute un atome d'oxygène.</p>
+<div class="ladder" id="ladder"></div>
+<div class="pairs">
+<div class="pair"><b>-ite</b> a un O de moins que <b>-ate</b></div>
+<div class="pair">NO₂ nitrite → NO₃ nitrate</div>
+<div class="pair">SO₃ sulfite → SO₄ sulfate</div>
+<div class="pair">PO₃ phosphite → PO₄ phosphate</div>
+</div>
+</div>
+
+<h2>3. Mini-quiz</h2>
+<section class="box quiz" aria-live="polite">
+<b>🎯 Teste-toi</b> <span id="score">Score : 0</span>
+<div class="q" id="qq"></div>
+<div class="opts" id="opts"></div>
+<button class="btn" id="next">Question suivante</button>
+</section>
+</main>
+<script>
+const F={N:["Famille de l'azote","#a6e36f"],Cl:["Famille du chlore","#ff8fc2"],S:["Famille du soufre","#ffc94d"],P:["Famille du phosphore","#b9a5ff"],X:["Autres","#7cc4ff"]};
+// [formule, nom, famille, charge]
+const I=[
+["OH","Hydroxyde","X","1−"],["NO2","Nitrite","N","1−"],["NO3","Nitrate","N","1−"],["NH4","Ammonium","N","1+"],
+["ClO","Hypochlorite","Cl","1−"],["ClO2","Chlorite","Cl","1−"],["ClO3","Chlorate","Cl","1−"],["ClO4","Perchlorate","Cl","1−"],
+["SO3","Sulfite","S","2−"],["SO4","Sulfate","S","2−"],["PO3","Phosphite","P","3−"],["PO4","Phosphate","P","3−"],
+["MnO4","Permanganate","X","1−"],["CO3","Carbonate","X","2−"]];
+const sub=s=>s.replace(/\d/g,d=>"<sub>"+d+"</sub>");
+const uni=s=>s.replace(/\d/g,d=>"₀₁₂₃₄₅₆₇₈₉"[d]);
+const bar=document.getElementById("bar"),grid=document.getElementById("grid");let fam="all";
+function chip(k,l,c){const b=document.createElement("button");b.className="chip";b.textContent=l;b.style.setProperty("--c",c);b.setAttribute("aria-pressed",k===fam);
+b.onclick=()=>{fam=k;[...bar.children].forEach(x=>x.setAttribute("aria-pressed",x===b));[...grid.children].forEach(c=>c.classList.toggle("hide",!(fam==="all"||c.dataset.f===fam)))};bar.appendChild(b)}
+chip("all","Tous","#ffd23f");for(const k in F)chip(k,F[k][0],F[k][1]);
+I.forEach(e=>{const d=document.createElement("button");d.className="card";d.dataset.f=e[2];d.style.setProperty("--c",F[e[2]][1]);
+d.setAttribute("aria-label",e[1]+", formule "+e[0]);
+d.innerHTML=`<div class="in"><div class="f"><span class="s">${sub(e[0])}</span></div><div class="b"><div><div class="nm">${e[1]}</div><div class="fm">${F[e[2]][0]}<br>charge ${e[3]}</div></div></div></div>`;
+d.onclick=()=>d.classList.toggle("flip");grid.appendChild(d)});
+const L=document.getElementById("ladder");
+I.filter(e=>e[2]==="Cl").forEach((e,i)=>{const s=document.createElement("div");s.className="step";s.style.marginBottom=(i*0)+"px";
+s.innerHTML=`<span class="s">${sub(e[0])}</span><div class="nm">${e[1]}</div><div class="os" aria-label="${i+1} atome(s) d'oxygène">${'<span class="o"></span>'.repeat(i+1)}</div>`;L.appendChild(s)});
+// Quiz
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+let sc=0,n=0,locked=false;const qq=document.getElementById("qq"),op=document.getElementById("opts");
+function ask(){locked=false;const e=rnd(I),toName=Math.random()<.5;
+const o=[e,...I.filter(x=>x!==e).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+qq.textContent=toName?`Comment s'appelle ${uni(e[0])} ?`:`Quelle est la formule de : ${e[1]} ?`;
+const txt=x=>toName?x[1]:uni(x[0]);
+op.innerHTML="";o.forEach(x=>{const b=document.createElement("button");b.className="opt";b.textContent=txt(x);
+b.onclick=()=>{if(locked)return;locked=true;n++;if(x===e){sc++;b.classList.add("ok")}else{b.classList.add("ko");[...op.children].forEach(c=>{if(c.textContent===txt(e))c.classList.add("ok")})}
+document.getElementById("score").textContent=`Score : ${sc}/${n}`};op.appendChild(b)})}
+document.getElementById("next").onclick=ask;ask();
+</script>
+</body>
+</html>
